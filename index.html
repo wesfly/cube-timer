@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="timer-container">
+        <div class="timer-display">00:00:000</div>
+        <div class="status">Press spacebar...</div>
+    </div>
+
+    <script>
+        let timerRunning = false;
+        let timeElapsed = 0;
+        let intervalId = null;
+        let resetTimeoutId = null;
+
+        function formatTime(ms) {
+            const minutes = Math.floor(ms / 60000);
+            const seconds = Math.floor((ms % 60000) / 1000);
+            const milliseconds = ms % 1000;
+
+            return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}:${milliseconds.toString().padStart(3, '0')}`;
+        }
+
+        function updateDisplay() {
+            document.querySelector('.timer-display').textContent = formatTime(timeElapsed);
+        }
+
+        function startTimer() {
+            if (!timerRunning) {
+                timerRunning = true;
+                intervalId = setInterval(() => {
+                    timeElapsed += 10;
+                    updateDisplay();
+                }, 10);
+
+                document.querySelector('.status').textContent = 'Timer running...';
+            }
+        }
+
+        function stopAndReset() {
+            if (intervalId) clearInterval(intervalId);
+            if (resetTimeoutId) clearTimeout(resetTimeoutId);
+
+            timerRunning = false;
+            setTimeout(function(){
+                timeElapsed = 0;
+                document.querySelector('.status').textContent = 'Hold space to start timer';
+                updateDisplay();
+            }, 5000)
+            document.querySelector('.status').textContent = 'Will reset in 5 sec';
+            updateDisplay();
+        }
+
+        document.addEventListener('keydown', (event) => {
+            if (event.code === 'Space') {
+                event.preventDefault();
+                document.querySelector('.status').textContent = 'Hold spacebar to start timer...';
+            }
+        });
+
+        document.addEventListener('keyup', (event) => {
+            if (event.code === 'Space') {
+                event.preventDefault();
+                if (!timerRunning) {
+                    startTimer();
+                } else {
+                    stopAndReset();
+                }
+            }
+        });
+
+        updateDisplay();
+    </script>
+</body>
+
+</html>
